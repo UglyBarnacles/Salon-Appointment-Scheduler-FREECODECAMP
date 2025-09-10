@@ -1,0 +1,118 @@
+#! /bin/bash
+PSQL="psql -X --username=freecodecamp --dbname=salon --tuples-only -c"
+
+echo -e "\n~~~~~ Salon ~~~~~\n"
+
+
+MENU() {
+echo "Please select a service"
+echo -e "\n1) cut\n2) color\n3) perm"
+read SERVICE_ID_SELECTED
+
+case $SERVICE_ID_SELECTED in
+  1) CUT ;;
+  2) COLOR ;;
+  3) PERM ;;
+  *) MENU "Select a valid option" ;;
+esac
+}
+
+CUT() {
+  
+if [[ -z $1 ]]
+then
+  echo "Welcome, please enter your phone number to continue"
+  read CUSTOMER_PHONE
+else
+  echo -e "\n$1\n"
+fi
+
+PHONE_NUMBER=$($PSQL "SELECT phone FROM customers WHERE phone='$CUSTOMER_PHONE'")
+
+if [[ -z $PHONE_NUMBER ]]
+then
+  echo "Please enter your name"
+  read CUSTOMER_NAME
+  if [[ $CUSTOMER_NAME =~ ^[a-zA-Z]+$ ]]
+  then
+    $PSQL "INSERT INTO customers(phone, name) VALUES('$CUSTOMER_PHONE', '$CUSTOMER_NAME')"
+  else
+    CUT "PLEASE ENTER A PROPER NAME"
+  fi
+
+fi
+CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
+echo "Enter a time for the service you chose"
+read SERVICE_TIME
+$PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')"
+CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone='$CUSTOMER_PHONE'")
+echo -e "\nI have put you down for a cut at $SERVICE_TIME, $CUSTOMER_NAME"
+}
+
+COLOR() {
+  
+if [[ -z $1 ]]
+then
+  echo "Welcome, please enter your phone number to continue"
+  read CUSTOMER_PHONE
+else
+  echo -e "\n$1\n"
+fi
+
+PHONE_NUMBER=$($PSQL "SELECT phone FROM customers WHERE phone='$CUSTOMER_PHONE'")
+
+if [[ -z $PHONE_NUMBER ]]
+then
+  echo "Please enter your name"
+  read CUSTOMER_NAME
+  if [[ $CUSTOMER_NAME =~ ^[a-zA-Z]+$ ]]
+  then
+    $PSQL "INSERT INTO customers(phone, name) VALUES('$CUSTOMER_PHONE', '$CUSTOMER_NAME')"
+  else
+    COLOR "PLEASE ENTER A PROPER NAME"
+  fi
+
+fi
+CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
+echo "Enter a time for the service you chose"
+read SERVICE_TIME
+$PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')"
+CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone='$CUSTOMER_PHONE'")
+echo -e "\nI have put you down for a COLOR at $SERVICE_TIME, $CUSTOMER_NAME"
+}
+
+PERM() {
+  
+if [[ -z $1 ]]
+then
+  echo "Welcome, please enter your phone number to continue"
+  read CUSTOMER_PHONE
+else
+  echo -e "\n$1\n"
+fi
+
+PHONE_NUMBER=$($PSQL "SELECT phone FROM customers WHERE phone='$CUSTOMER_PHONE'")
+
+if [[ -z $PHONE_NUMBER ]]
+then
+  echo "Please enter your name"
+  read CUSTOMER_NAME
+  if [[ $CUSTOMER_NAME =~ ^[a-zA-Z]+$ ]]
+  then
+    $PSQL "INSERT INTO customers(phone, name) VALUES('$CUSTOMER_PHONE', '$CUSTOMER_NAME')"
+  else
+    PERM "PLEASE ENTER A PROPER NAME"
+  fi
+
+fi
+CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone='$CUSTOMER_PHONE'")
+echo "Enter a time for the service you chose"
+read SERVICE_TIME
+$PSQL "INSERT INTO appointments(customer_id, service_id, time) VALUES($CUSTOMER_ID, $SERVICE_ID_SELECTED, '$SERVICE_TIME')"
+CUSTOMER_NAME=$($PSQL "SELECT name FROM customers WHERE phone='$CUSTOMER_PHONE'")
+echo -e "\nI have put you down for a PERM at $SERVICE_TIME, $CUSTOMER_NAME"
+}
+MENU
+
+TYPE=$($PSQL "SELECT name FROM services WHERE service_id=$SERVICE_ID_SELECTED")
+echo -e "\nI have put you down for a$TYPE at $SERVICE_TIME,$CUSTOMER_NAME."echo -e "\nI have put you down for a PERM at $SERVICE_TIME, $CUSTOMER_NAME"
